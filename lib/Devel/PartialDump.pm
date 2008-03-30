@@ -305,6 +305,10 @@ A warpper for C<dump> that prints strings plainly.
 
 Returns a one line, human readable, concise dump of @stuff.
 
+If called in void context, will C<warn> with the dump.
+
+Truncates the dump according to C<max_length> if specified.
+
 =item dump_as_list $depth, @stuff
 
 =item dump_as_pairs $depth, @stuff
