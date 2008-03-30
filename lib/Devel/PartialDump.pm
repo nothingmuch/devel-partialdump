@@ -263,7 +263,18 @@ printing.
 
 This module is a data dumper optimized for logging of arbitrary parameters.
 
-It attempts to truncate overly verbose data, be 
+It attempts to truncate overly verbose data, in a way that is hopefully more
+useful for diagnostics warnings than
+
+	warn Dumper(@stuff);
+
+Unlike other data dumping modules there are no attempts at correctness or cross
+referencing, this is only meant to provide a slightly deeper look into the data
+in question.
+
+There is a default recursion limit, and a default truncation of long lists, and
+the dump is formatted on one line (new lines in strings are escaped), to aid in
+readability.
 
 =head1 ATTRIBUTES
 
