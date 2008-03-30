@@ -160,6 +160,11 @@ sub format_hash {
 	return "{ " . $self->dump_as_pairs($depth + 1, %$hash) . " }";
 }
 
+sub format_scalar {
+	my ( $self, $depth, $scalar ) = @_;
+	return "\\" . $self->format($depth + 1, $$scalar);
+}
+
 sub format_object {
 	my ( $self, $depth, $object ) = @_;
 	$self->stringify ? "$object" : overload::StrVal($object)
