@@ -42,11 +42,18 @@ has pairs => (
 );
 
 sub dump {
-	my ( $self, @what ) = @_;
+	my ( @args ) = @_;
+	my $self;
 
-	my $method = "dump_as_" . ( $self->should_dump_as_pairs(@what) ? "pairs" : "list" );
+	if ( blessed($args[0]) and $args[0]->isa(__PACKAGE__) ) {
+		$self = shift @args;
+	} else {
+		$self = our $default_dumper;
+	}
 
-	my $dump = $self->$method(1, @what);
+	my $method = "dump_as_" . ( $self->should_dump_as_pairs(@args) ? "pairs" : "list" );
+
+	my $dump = $self->$method(1, @args);
 
 	if ( $self->has_max_length ) {
 		if ( length($dump) > $self->max_length ) {
