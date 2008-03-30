@@ -192,6 +192,7 @@ sub format_number {
 	return "$value";
 }
 
+our $default_dumper = __PACKAGE__->new;
 
 __PACKAGE__
 
