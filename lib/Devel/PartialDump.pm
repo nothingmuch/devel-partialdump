@@ -7,6 +7,13 @@ use Scalar::Util qw(looks_like_number reftype blessed);
 
 our $VERSION = "0.02";
 
+extends qw(
+	Moose::Object
+	Exporter
+);
+
+our @EXPORT_OK = qw(dump warn $default_dumper);
+
 has max_length => (
 	isa => "Int",
 	is  => "rw",
@@ -247,6 +254,11 @@ printing.
 		print "foo called with args: " . Devel::PartialDump->new->dump(@_);
 	}
 
+	use Devel::PartialDump qw(warn);
+
+	# warn is overloaded to create a concise dump instead of stringifying $some_bad_data
+	warn "this made a boo boo: ", $some_bad_data
+
 =head1 DESCRIPTION
 
 This module is a data dumper optimized for logging of arbitrary parameters.
@@ -290,6 +302,44 @@ Whether or not to autodetect named args as pairs in the main C<dump> function.
 If this attribute is true, and the top level value list is even sized, and
 every odd element is not a reference, then it will dumped as pairs instead of a
 list.
+
+=back
+
+=head1 EXPORTS
+
+All exports are optional, nothing is exported by default.
+
+=over 4
+
+=item warn
+
+=item dump
+
+See the C<warn> and C<dump> methods.
+
+These methods will use C<$Devel::PartialDump::default_dumper> as the invocant if the
+first argument is not blessed and C<isa> L<Devel::PartialDump>, so they can be
+used as functions too.
+
+Particularly C<warn> can be used as a drop in replacement for the built in
+warn:
+
+	warn "blah blah: ", $some_data;
+
+by importing
+
+	use Devel::PartialDump qw(warn);
+
+C<$some_data> will be have some of it's data dumped.
+
+=item $default_dumper
+
+The default dumper object to use for export style calls.
+
+Can be assigned to to alter behavior globally.
+
+This is generally useful when using the C<warn> export as a drop in replacement
+for C<CORE::warn>.
 
 =back
 
