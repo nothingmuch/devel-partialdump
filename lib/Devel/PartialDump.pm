@@ -5,7 +5,7 @@ use Moose;
 
 use Scalar::Util qw(looks_like_number reftype blessed);
 
-our $VERSION = "0.01";
+our $VERSION = "0.02";
 
 has max_length => (
 	isa => "Int",
