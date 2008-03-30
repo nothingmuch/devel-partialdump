@@ -1,0 +1,7 @@
+0.02
+	- fixed DESCRIPTION, which just trailed off mid sentance
+	- Add the C<warn> method
+	- Add optional exports
+
+0.01
+	- Initial release
