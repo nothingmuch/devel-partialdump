@@ -41,6 +41,28 @@ has pairs => (
 	default => 1,
 );
 
+sub warn {
+	my ( @args ) = @_;
+	my $self;
+
+	if ( blessed($args[0]) and $args[0]->isa(__PACKAGE__) ) {
+		$self = shift @args;
+	} else {
+		$self = our $default_dumper;
+	}
+
+	require Carp;
+
+	Carp::carp(
+		join $,,
+		map {
+			!ref($_) && defined($_)
+				? $_
+				: $self->dump($_)
+		} @args
+	);
+}
+
 sub dump {
 	my ( @args ) = @_;
 	my $self;
@@ -62,7 +84,7 @@ sub dump {
 	}
 
 	if ( not defined wantarray ) {
-		warn "$dump\n";
+		CORE::warn "$dump\n";
 	} else {
 		return $dump;
 	}
@@ -274,6 +296,10 @@ list.
 =head1 METHODS
 
 =over 4
+
+=item warn
+
+A warpper for C<dump> that prints strings plainly.
 
 =item dump @stuff
 
