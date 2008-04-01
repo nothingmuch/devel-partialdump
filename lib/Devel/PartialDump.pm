@@ -61,7 +61,7 @@ sub warn {
 	require Carp;
 
 	Carp::carp(
-		join $,,
+		join $, || '',
 		map {
 			!ref($_) && defined($_)
 				? $_
