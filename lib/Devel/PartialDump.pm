@@ -12,7 +12,7 @@ extends qw(
 	Exporter
 );
 
-our @EXPORT_OK = qw(dump warn $default_dumper);
+our @EXPORT_OK = qw(dump warn show $default_dumper);
 
 has max_length => (
 	isa => "Int",
@@ -48,6 +48,12 @@ has pairs => (
 	default => 1,
 );
 
+has objects => (
+	isa => "Bool",
+	is  => "rw",
+	default => 1,
+);
+
 sub warn {
 	my ( @args ) = @_;
 	my $self;
@@ -61,13 +67,51 @@ sub warn {
 	require Carp;
 
 	Carp::carp(
-		join $, || '',
-		map {
-			!ref($_) && defined($_)
+		$self->_join(
+			map {
+				!ref($_) && defined($_)
 				? $_
 				: $self->dump($_)
-		} @args
+			} @args
+		),
 	);
+}
+
+sub show {
+	my ( @args ) = @_;
+	my $self;
+
+	if ( blessed($args[0]) and $args[0]->isa(__PACKAGE__) ) {
+		$self = shift @args;
+	} else {
+		$self = our $default_dumper;
+	}
+
+	$self->warn(@args);
+
+	return wantarray ? @args : $args[0];
+}
+
+sub _join {
+	my ( $self, @strings ) = @_;
+
+	my $ret = "";
+
+	if ( @strings ) {
+		my $sep = $, || $" || " ";
+		my $re = qr/(?: \s| \Q$sep\E )$/x;
+
+		my $last = pop @strings;
+
+		foreach my $string ( @strings ) {
+			$ret .= $string;
+			$ret .= $sep unless $string =~ $re;
+		}
+
+		$ret .= $last;
+	}
+
+	return $ret;
 }
 
 sub dump {
@@ -171,15 +215,15 @@ sub format_ref {
 	my ( $self, $depth, $ref ) = @_;
 
 	if ( $depth > $self->max_depth ) {
-		return "$ref";
+		return overload::StrVal($ref);
 	} else {
 		my $reftype = reftype($ref);
 		my $method = "format_" . lc reftype $ref;
 
 		if ( $self->can($method) ) {
-			$self->$method( $depth, $ref );
+			return $self->$method( $depth, $ref );
 		} else {
-			return "$ref";
+			return overload::StrVal($ref);
 		}
 	}
 }
@@ -187,23 +231,38 @@ sub format_ref {
 sub format_array {
 	my ( $self, $depth, $array ) = @_;
 
-	return "[ " . $self->dump_as_list($depth + 1, @$array) . " ]";
+	my $class = blessed($array) || '';
+	$class .= "=" if $class;
+
+	return $class . "[ " . $self->dump_as_list($depth + 1, @$array) . " ]";
 }
 
 sub format_hash {
 	my ( $self, $depth, $hash ) = @_;
 
-	return "{ " . $self->dump_as_pairs($depth + 1, %$hash) . " }";
+	my $class = blessed($hash) || '';
+	$class .= "=" if $class;
+
+	return $class . "{ " . $self->dump_as_pairs($depth + 1, map { $_ => $hash->{$_} } sort keys %$hash) . " }";
 }
 
 sub format_scalar {
 	my ( $self, $depth, $scalar ) = @_;
-	return "\\" . $self->format($depth + 1, $$scalar);
+
+	my $class = blessed($scalar) || '';
+	$class .= "=" if $class;
+
+	return $class . "\\" . $self->format($depth + 1, $$scalar);
 }
 
 sub format_object {
 	my ( $self, $depth, $object ) = @_;
-	$self->stringify ? "$object" : overload::StrVal($object)
+
+	if ( $self->objects ) {
+		return $self->format_ref($depth, $object);
+	} else {
+		return $self->stringify ? "$object" : overload::StrVal($object);
+	}
 }
 
 sub format_string {
