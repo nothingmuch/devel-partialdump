@@ -3,6 +3,7 @@
 package Devel::PartialDump;
 use Mouse qw(has meta); # no need for anything else
 
+use Carp ();
 use Scalar::Util qw(looks_like_number reftype blessed);
 
 use namespace::clean -except => 'meta';
@@ -57,7 +58,7 @@ has objects => (
 	default => 1,
 );
 
-sub warn {
+sub warn_str {
 	my ( @args ) = @_;
 	my $self;
 
@@ -66,18 +67,24 @@ sub warn {
 	} else {
 		$self = our $default_dumper;
 	}
-
-	require Carp;
-
-	Carp::carp(
-		$self->_join(
-			map {
-				!ref($_) && defined($_)
-				? $_
-				: $self->dump($_)
-			} @args
-		),
+	return $self->_join(
+		map {
+			!ref($_) && defined($_)
+			? $_
+			: $self->dump($_)
+		} @args
 	);
+}
+
+sub warn {
+	Carp::carp(warn_str(@_));
+}
+
+foreach my $f ( qw(carp croak confess cluck) ) {
+	eval "sub $f {
+		local \$Carp::CarpLevel = \$Carp::CarpLevel + 1;
+		Carp::$f(warn_str(\@_));
+	}";
 }
 
 sub show {
@@ -92,8 +99,10 @@ sub show {
 
 	$self->warn(@args);
 
-	return wantarray ? @args : $args[0];
+	return ( @args == 1 ? $args[0] : @args );
 }
+
+sub show_scalar ($) { goto \&show }
 
 sub _join {
 	my ( $self, @strings ) = @_;
@@ -338,6 +347,14 @@ There is a default recursion limit, and a default truncation of long lists, and
 the dump is formatted on one line (new lines in strings are escaped), to aid in
 readability.
 
+You can enable it temporarily by importing functions like C<warn>, C<croak> etc
+to get more informative errors during development, or even use it as:
+
+	BEGIN { local $@; eval "use Devel::PartialDump qw(...)" }
+
+to get DWIM formatting only if it's installed, without introducing a
+dependency.
+
 =head1 ATTRIBUTES
 
 =over 4
@@ -382,13 +399,27 @@ list.
 
 All exports are optional, nothing is exported by default.
 
+This module uses L<Sub::Exporter>, so exports can be renamed, curried, etc.
+
 =over 4
 
 =item warn
 
+=item show 
+
+=item show_scalar
+
+=item croak
+
+=item carp
+
+=item confess
+
+=item cluck
+
 =item dump
 
-See the C<warn> and C<dump> methods.
+See the various methods for behavior documentation.
 
 These methods will use C<$Devel::PartialDump::default_dumper> as the invocant if the
 first argument is not blessed and C<isa> L<Devel::PartialDump>, so they can be
@@ -420,9 +451,40 @@ for C<CORE::warn>.
 
 =over 4
 
-=item warn
+=item warn @blah
 
 A warpper for C<dump> that prints strings plainly.
+
+=item show @blah
+
+=item show_scalar $x
+
+Like C<warn>, but instead of returning the value from C<warn> it returns its
+arguments, so it can be used in the middle of an expression.
+
+Note that
+
+	my $x = show foo();
+
+will actually evaluaate C<foo> in list context, so if you only want to dump a
+single element and retain scalar context use
+
+	my $x = show_scalar foo();
+
+which has a prototype of C<$> (as opposed to taking a list).
+
+This is similar to Ingy's L<XXX> module.
+
+=item carp
+
+=item croak
+
+=item confess
+
+=item cluck
+
+Drop in replacements for L<Carp> exports, that format their arguments like
+C<warn>.
 
 =item dump @stuff
 
