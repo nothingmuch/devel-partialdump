@@ -9,7 +9,13 @@ use namespace::clean -except => 'meta';
 
 our $VERSION = "0.02";
 
-our @EXPORT_OK = qw(dump warn show $default_dumper);
+use Sub::Exporter -setup => {
+	exports => [qw(dump warn show show_scalar croak carp confess cluck $default_dumper)],
+	groups => {
+		easy => [qw(dump warn show show_scalar carp croak)],
+		carp => [qw(croak carp)],
+	},
+};
 
 has max_length => (
 	isa => "Int",
