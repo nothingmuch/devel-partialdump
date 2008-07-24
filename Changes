@@ -1,3 +1,7 @@
+0.03
+	- use Mouse & Sub::Exporter
+	- optional Carp replacement exports
+
 0.02
 	- fixed DESCRIPTION, which just trailed off mid sentance
 	- Add the C<warn> method
