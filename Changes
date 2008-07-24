@@ -1,3 +1,6 @@
+0.04
+	- Fix bad deps
+
 0.03
 	- use Mouse & Sub::Exporter
 	- optional Carp replacement exports
