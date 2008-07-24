@@ -12,6 +12,7 @@ WriteMakefile(
 	PL_FILES     => { },
 	PREREQ_PM    => {
 		'Test::use::ok' => 0,
+		'Test::Warn' => 0,
 		'Mouse' => 0,
 		'Scalar::Util' => 0,
 		'namespace::clean' => 0.08,
