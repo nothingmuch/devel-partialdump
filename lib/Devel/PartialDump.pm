@@ -5,12 +5,9 @@ use Mouse qw(has meta); # no need for anything else
 
 use Scalar::Util qw(looks_like_number reftype blessed);
 
-our $VERSION = "0.02";
+use namespace::clean -except => 'meta';
 
-extends qw(
-	Moose::Object
-	Exporter
-);
+our $VERSION = "0.02";
 
 our @EXPORT_OK = qw(dump warn show $default_dumper);
 
