@@ -16,7 +16,38 @@ use Sub::Exporter -setup => {
 		easy => [qw(dump warn show show_scalar carp croak)],
 		carp => [qw(croak carp)],
 	},
+	collectors => {
+		override_carp => sub {
+			no warnings 'redefine';
+			require Carp::Heavy;
+			*Carp::caller_info = \&replacement_caller_info;
+		},
+	},
 };
+
+# a replacement for Carp::caller_info
+sub replacement_caller_info {
+	my $i = shift(@_) + 1;
+
+	package DB;
+	my %call_info;
+	@call_info{
+	qw(pack file line sub has_args wantarray evaltext is_require)
+	} = caller($i);
+
+	return unless (defined $call_info{pack});
+
+	my $sub_name = Carp::get_subname(\%call_info);
+
+	if ($call_info{has_args}) {
+		$sub_name .= '(' . Devel::PartialDump::dump(@DB::args) . ')';
+	}
+
+	$call_info{sub_name} = $sub_name;
+
+	return wantarray() ? %call_info : \%call_info;
+}
+
 
 has max_length => (
 	isa => "Int",
