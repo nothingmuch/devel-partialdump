@@ -1,3 +1,7 @@
+0.06
+	- add override_carp import option, which replaces Carp's argument
+	  formatting with Devel::PartialDump::dump
+
 0.05
 	- Ugh... another dep fix
 
