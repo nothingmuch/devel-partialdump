@@ -504,7 +504,7 @@ single element and retain scalar context use
 
 which has a prototype of C<$> (as opposed to taking a list).
 
-This is similar to Ingy's L<XXX> module.
+This is similar to the venerable Ingy's fabulous and amazing L<XXX> module.
 
 =item carp
 
