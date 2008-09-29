@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 package Devel::PartialDump;
-use Mouse qw(has meta); # no need for anything else
+use Mouse;
 
 use Carp ();
 use Scalar::Util qw(looks_like_number reftype blessed);
@@ -112,6 +112,7 @@ sub warn {
 }
 
 foreach my $f ( qw(carp croak confess cluck) ) {
+	no warnings 'redefine';
 	eval "sub $f {
 		local \$Carp::CarpLevel = \$Carp::CarpLevel + 1;
 		Carp::$f(warn_str(\@_));
