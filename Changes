@@ -1,3 +1,6 @@
+0.07
+	- Skip tests if Test::Warn is not installed
+
 0.06
 	- add override_carp import option, which replaces Carp's argument
 	  formatting with Devel::PartialDump::dump
