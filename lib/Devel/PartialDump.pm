@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 package Devel::PartialDump;
-use Mouse;
+use Any::Moose;
 
 use Carp ();
 use Scalar::Util qw(looks_like_number reftype blessed);
