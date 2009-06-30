@@ -1,3 +1,7 @@
+0.09
+    - Add some example output to the documentation
+    - Update version control notice
+
 0.08
 	- Switch to Any::Moose (rafl)
 
