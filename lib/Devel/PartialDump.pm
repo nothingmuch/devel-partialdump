@@ -387,6 +387,40 @@ to get more informative errors during development, or even use it as:
 to get DWIM formatting only if it's installed, without introducing a
 dependency.
 
+=head1 SAMPLE OUTPUT
+
+=over 4
+
+=item C<< "foo" >>
+
+    "foo"
+
+=item C<< "foo" => "bar" >>
+
+    foo => "bar"
+
+=item C<< foo => "bar", gorch => [ 1, "bah" ] >>
+
+    foo => "bar", gorch => [ 1, "bah" ]
+
+=item C<< [ { foo => ["bar"] } ] >>
+
+    [ { foo => ARRAY(0x9b265d0) } ]
+
+=item C<< [ 1 .. 10 ] >>
+
+    [ 1, 2, 3, 4, 5, 6, ... ]
+
+=item C<< "foo\nbar" >>
+
+    "foo\nbar"
+
+=item C<< "foo" . chr(1) >>
+
+    "foo\x{1}"
+
+=back
+
 =head1 ATTRIBUTES
 
 =over 4
@@ -437,7 +471,7 @@ This module uses L<Sub::Exporter>, so exports can be renamed, curried, etc.
 
 =item warn
 
-=item show 
+=item show
 
 =item show_scalar
 
