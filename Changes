@@ -1,3 +1,6 @@
+0.10
+	- Make formatting configurable, and change to resemble JSON by default
+
 0.09
     - Add some example output to the documentation
     - Update version control notice
