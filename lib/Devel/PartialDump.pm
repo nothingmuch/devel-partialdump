@@ -89,6 +89,19 @@ has objects => (
 	default => 1,
 );
 
+has list_delim => (
+	isa => "Str",
+	default => ", ",
+	is => "rw",
+);
+
+has pair_delim => (
+	isa => "Str",
+	#default => " => ",
+	default => ": ",
+	is => "rw",
+);
+
 sub warn_str {
 	my ( @args ) = @_;
 	my $self;
@@ -208,7 +221,7 @@ sub dump_as_pairs {
 		@what = splice(@what, 0, $self->max_elements * 2 );
 	}
 
-	return join(", ", $self->_dump_as_pairs($depth, @what), ($truncated ? "..." : ()) );
+	return join($self->list_delim, $self->_dump_as_pairs($depth, @what), ($truncated ? "..." : ()) );
 }
 
 sub _dump_as_pairs {
@@ -219,7 +232,7 @@ sub _dump_as_pairs {
 	my ( $key, $value, @rest ) = @what;
 
 	return (
-		( $self->format_key($depth, $key) . " => " . $self->format($depth, $value) ),
+		( $self->format_key($depth, $key) . $self->pair_delim . $self->format($depth, $value) ),
 		$self->_dump_as_pairs($depth, @rest),
 	);
 }
@@ -276,7 +289,6 @@ sub format_array {
 	my ( $self, $depth, $array ) = @_;
 
 	my $class = blessed($array) || '';
-	$class .= "=" if $class;
 
 	return $class . "[ " . $self->dump_as_list($depth + 1, @$array) . " ]";
 }
@@ -285,7 +297,6 @@ sub format_hash {
 	my ( $self, $depth, $hash ) = @_;
 
 	my $class = blessed($hash) || '';
-	$class .= "=" if $class;
 
 	return $class . "{ " . $self->dump_as_pairs($depth + 1, map { $_ => $hash->{$_} } sort keys %$hash) . " }";
 }
