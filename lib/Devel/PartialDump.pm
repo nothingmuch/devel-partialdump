@@ -8,7 +8,7 @@ use Scalar::Util qw(looks_like_number reftype blessed);
 
 use namespace::clean -except => 'meta';
 
-our $VERSION = "0.10";
+our $VERSION = "0.11";
 
 use Sub::Exporter -setup => {
 	exports => [qw(dump warn show show_scalar croak carp confess cluck $default_dumper)],
