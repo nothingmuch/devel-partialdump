@@ -12,7 +12,7 @@ WriteMakefile(
 	PL_FILES     => { },
 	PREREQ_PM    => {
 		'Test::use::ok' => 0,
-		'Any::Moose' => 0,
+		'Moose' => 0,
 		'Scalar::Util' => 0,
 		'namespace::clean' => 0.08,
 		'Sub::Exporter' => 0,
